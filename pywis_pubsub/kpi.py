@@ -162,7 +162,7 @@ class WNMKeyPerformanceIndicators:
         results['summary']['grade'] = overall_grade
 
         results['datetime'] = get_current_datetime_rfc3339()
-        results['generated-by'] = f'pywis-pubsub {pywis_pubsub.__version__} (https://github.com/wmo-im/pywis-pubsub)'  # noqa
+        results['generated-by'] = f'pywis-pubsub {pywis_pubsub.__version__} (https://github.com/World-Meteorological-Organization/pywis-pubsub)'  # noqa
 
         return results
 

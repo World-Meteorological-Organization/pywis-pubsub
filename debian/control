@@ -7,8 +7,8 @@ Build-Depends: debhelper (>= 9),
                python3-all,
                python3-setuptools
 Standards-Version: 4.3.0
-Vcs-Git: https://github.com/wmo-im/pywis-pubsub.git
-Homepage: https://github.com/wmo-im/pywis-pubsub
+Vcs-Git: https://github.com/World-Meteorological-Organization/pywis-pubsub.git
+Homepage: https://github.com/World-Meteorological-Organization/pywis-pubsub
 
 Package: pywis-pubsub
 Architecture: all
