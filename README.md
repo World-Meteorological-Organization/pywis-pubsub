@@ -1,5 +1,5 @@
-[![flake8](https://github.com/wmo-im/pywis-pubsub/workflows/flake8/badge.svg)](https://github.com/wmo-im/pywis-pubsub/actions)
-[![test-publish-subscribe-download](https://github.com/wmo-im/pywis-pubsub/workflows/test-publish-subscribe-download/badge.svg)](https://github.com/wmo-im/pywis-pubsub/actions)
+[![flake8](https://github.com/World-Meteorological-Organization/pywis-pubsub/workflows/flake8/badge.svg)](https://github.com/World-Meteorological-Organization/pywis-pubsub/actions)
+[![test-publish-subscribe-download](https://github.com/World-Meteorological-Organization/pywis-pubsub/workflows/test-publish-subscribe-download/badge.svg)](https://github.com/World-Meteorological-Organization/pywis-pubsub/actions)
 
 # pywis-pubsub
 
@@ -38,7 +38,7 @@ cd pywis-pubsub
 source bin/activate
 
 # clone codebase and install
-git clone https://github.com/wmo-im/pywis-pubsub.git
+git clone https://github.com/World-Meteorological-Organization/pywis-pubsub.git
 cd pywis-pubsub
 python3 setup.py install
 ```
@@ -238,7 +238,7 @@ rm -fr build dist *.egg-info
 python3 setup.py sdist bdist_wheel --universal
 twine upload dist/*
 
-# publish release on GitHub (https://github.com/wmo-im/pywis-pubsub/releases/new)
+# publish release on GitHub (https://github.com/World-Meteorological-Organization/pywis-pubsub/releases/new)
 
 # bump version back to dev
 vi pywis_pubsub/__init__.py  # update __version__
@@ -252,7 +252,7 @@ git push origin main
 
 ### Bugs and Issues
 
-All bugs, enhancements and issues are managed on [GitHub](https://github.com/wmo-im/pywis-pubsub/issues).
+All bugs, enhancements and issues are managed on [GitHub](https://github.com/World-Meteorological-Organization/pywis-pubsub/issues).
 
 ## Contact
 

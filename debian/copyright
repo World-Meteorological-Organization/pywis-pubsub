@@ -1,5 +1,5 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Source: https://github.com/wmo-im/pywis-pubsub
+Source: https://github.com/World-Meteorological-Organization/pywis-pubsub
 
 Files: *
 Copyright: Copyright 2023 Tom Kralidis

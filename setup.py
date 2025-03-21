@@ -88,7 +88,7 @@ setup(
     author_email='antje.schremmer@dwd.de',
     maintainer='Tom Kralidis',
     maintainer_email='tomkraldis@gmail.com',
-    url='https://github.com/wmo-im/pywis-pubsub',
+    url='https://github.com/World-Meteorological-Organization/pywis-pubsub',
     install_requires=read('requirements.txt').splitlines(),
     packages=find_packages(),
     include_package_data=True,
