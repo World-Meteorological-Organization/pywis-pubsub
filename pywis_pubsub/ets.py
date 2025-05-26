@@ -73,7 +73,7 @@ class WNMTestSuite:
         tests = []
         ets_report = {
             'summary': {},
-            'generated-by': f'pywis-pubsub {pywis_pubsub.__version__} (https://github.com/World-Meteorological-Organization/pywis-pubsub)'  # noqa
+            'generated_by': f'pywis-pubsub {pywis_pubsub.__version__} (https://github.com/World-Meteorological-Organization/pywis-pubsub)'  # noqa
         }
 
         for f in dir(WNMTestSuite):
