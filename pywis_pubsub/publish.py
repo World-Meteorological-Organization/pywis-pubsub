@@ -209,7 +209,6 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
 @click.option('--identifier', '-i', help='unique file identifier')
 @click.option('--inline', '-in', default=False,
               help='whether to publish the data inline as base64 (default=False)')  # noqa
-@click.option('--topic', '-t', help='topic to publish to')
 @click.option('--datetime', '-d', 'datetime_',
               help='Datetime instant or extent')
 @click.option('--topic', '-t', help='topic to publish to')
@@ -257,13 +256,13 @@ def publish(ctx, file_, config, url, topic, datetime_, identifier,
                 start, end = datetime_.split('/')
                 if start:
                     start_datetime = datetime.strptime(
-                        start, '%Y-%m-%dT%H:%M:%S%Z')
+                        start, '%Y-%m-%dT%H:%M:%SZ')
                 if end:
                     end_datetime = datetime.strptime(
-                        end, '%Y-%m-%dT%H:%M:%S%Z')
+                        end, '%Y-%m-%dT%H:%M:%SZ')
             else:
                 datetime_2 = datetime.strptime(
-                    datetime_, '%Y-%m-%dT%H:%M:%S%Z')
+                    datetime_, '%Y-%m-%dT%H:%M:%SZ')
 
         message = create_message(
             topic=topic2,
