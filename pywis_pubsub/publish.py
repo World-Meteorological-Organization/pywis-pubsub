@@ -256,13 +256,13 @@ def publish(ctx, file_, config, url, topic, datetime_, identifier,
                 start, end = datetime_.split('/')
                 if start:
                     start_datetime = datetime.strptime(
-                        start, '%Y-%m-%dT%H:%M:%S%Z')
+                        start, '%Y-%m-%dT%H:%M:%SZ')
                 if end:
                     end_datetime = datetime.strptime(
-                        end, '%Y-%m-%dT%H:%M:%S%Z')
+                        end, '%Y-%m-%dT%H:%M:%SZ')
             else:
                 datetime_2 = datetime.strptime(
-                    datetime_, '%Y-%m-%dT%H:%M:%S%Z')
+                    datetime_, '%Y-%m-%dT%H:%M:%SZ')
 
         message = create_message(
             topic=topic2,
