@@ -73,8 +73,8 @@ pywis-pubsub subscribe --config local.yml --download
 # subscribe, and filter messages by geometry
 pywis-pubsub subscribe --config local.yml --bbox=-142,42,-52,84
 
-# subscribe, and filter messages by geometry, increase debugging verbosity
-pywis-pubsub subscribe --config local.yml --bbox=-142,42,-52,84 --verbosity=DEBUG
+# subscribe, and filter messages by geometry, adjust debugging verbosity
+pywis-pubsub subscribe --config local.yml --bbox=-142,42,-52,84 --verbosity=INFO
 ```
 
 ### Validating a message and verifying data
@@ -101,13 +101,13 @@ pywis-pubsub ets validate https://example.org/path/to/file.json --no-fail-on-sch
 export PYWIS_PUBSUB_GDC_URL=https://api.weather.gc.ca/collections/wis2-discovery-metadata
 
 # all key performance indicators at once
-pywis-pubsub kpi validate https://example.org/path/to/file.json --verbosity DEBUG
+pywis-pubsub kpi validate https://example.org/path/to/file.json --verbosity INFO/
 
 # all key performance indicators at once, but turn ETS validation off
-pywis-pubsub kpi validate https://example.org/path/to/file.json --no-fail-on-ets --verbosity DEBUG
+pywis-pubsub kpi validate https://example.org/path/to/file.json --no-fail-on-ets --verbosity INFO
 
 # all key performance indicators at once, in summary
-pywis-pubsub kpi validate https://example.org/path/to/file.json --verbosity DEBUG --summary
+pywis-pubsub kpi validate https://example.org/path/to/file.json --verbosity INFO --summary
 
 # selected key performance indicator
 pywis-pubsub kpi validate --kpi metadata_id /path/to/file.json -v INFO
