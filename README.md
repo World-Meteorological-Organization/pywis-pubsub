@@ -73,7 +73,7 @@ pywis-pubsub subscribe --config local.yml --download
 # subscribe, and filter messages by geometry
 pywis-pubsub subscribe --config local.yml --bbox=-142,42,-52,84
 
-# subscribe, and filter messages by geometry, increase debugging verbosity
+# subscribe, and filter messages by geometry, adjust debugging verbosity
 pywis-pubsub subscribe --config local.yml --bbox=-142,42,-52,84 --verbosity=DEBUG
 ```
 
@@ -142,7 +142,7 @@ pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config 
 pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -i stationXYZ-20221111085500 -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --operation delete
 
 # publish a message from file on disk
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml --file my_message.json
+pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml --wnm my_message.json
 ```
 
 ### Using the API

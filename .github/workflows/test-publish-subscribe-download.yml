@@ -14,8 +14,7 @@ jobs:
           python-version: '3.10'
       - name: Install pywis-pubsub
         run: |
-          python3 setup.py install
-          python3 setup.py build
+          pip3 install .
           pywis-pubsub --version
           pywis-pubsub schema sync
       - name: run mosquitto container, detached
@@ -27,18 +26,18 @@ jobs:
       - name: subscribe, publish and download without message validation
         run: |
           rm -rf .github/workflows/test-data/*.bufr4
-          pywis-pubsub subscribe --config .github/workflows/test-data/sub-no-msg-validation.yml --download --verbosity DEBUG > /tmp/subscribe.log &
+          pywis-pubsub subscribe --config .github/workflows/test-data/sub-no-msg-validation.yml --download > /tmp/subscribe.log &
           sleep 1
-          pywis-pubsub publish --config .github/workflows/test-data/pub-config.yml --verbosity=DEBUG -i WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500 -u https://wmostorage.blob.core.windows.net/wmo-public/wmo-information-system/pywis-pubsub-test/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4 -g 33.8025,-11.8415 -w 0-454-2-AWSCHIKANGAWA
+          pywis-pubsub publish --config .github/workflows/test-data/pub-config.yml -u https://wmostorage.blob.core.windows.net/wmo-public/wmo-information-system/pywis-pubsub-test/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4 -g 33.8025,-11.8415 -w 0-454-2-AWSCHIKANGAWA
           sleep 1
           less /tmp/subscribe.log
           ls -lh .github/workflows/test-data/origin/a/wis2/mwi/malawi_wmo_demo/data/core/weather/surface-based-observations/synop/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4
       - name: subscribe, publish and download with message validation
         run: |
           rm -rf .github/workflows/test-data/*.bufr4
-          pywis-pubsub subscribe --config .github/workflows/test-data/sub-with-msg-validation.yml --download --verbosity DEBUG > /tmp/subscribe.log &
+          pywis-pubsub subscribe --config .github/workflows/test-data/sub-with-msg-validation.yml --download > /tmp/subscribe.log &
           sleep 1
-          pywis-pubsub publish --config .github/workflows/test-data/pub-config.yml --verbosity=DEBUG -i WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500 -u https://wmostorage.blob.core.windows.net/wmo-public/wmo-information-system/pywis-pubsub-test/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4 -g 33.8025,-11.8415 -w 0-454-2-AWSCHIKANGAWA
+          pywis-pubsub publish --config .github/workflows/test-data/pub-config.yml -u https://wmostorage.blob.core.windows.net/wmo-public/wmo-information-system/pywis-pubsub-test/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4 -g 33.8025,-11.8415 -w 0-454-2-AWSCHIKANGAWA
           sleep 1
           less /tmp/subscribe.log
           ls -lh .github/workflows/test-data/origin/a/wis2/mwi/malawi_wmo_demo/data/core/weather/surface-based-observations/synop/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4
@@ -47,6 +46,6 @@ jobs:
           rm -rf .github/workflows/test-data/*.bufr4
           pywis-pubsub subscribe --config .github/workflows/test-data/sub-with-msg-validation.yml --download &
           sleep 1
-          pywis-pubsub publish --config .github/workflows/test-data/pub-config.yml --verbosity=DEBUG --file .github/workflows/test-data/example-message.json
+          pywis-pubsub publish --config .github/workflows/test-data/pub-config.yml --wnm .github/workflows/test-data/example-message.json
           sleep 1
           ls -lh .github/workflows/test-data/origin/a/wis2/mwi/malawi_wmo_demo/data/core/weather/surface-based-observations/synop/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4
