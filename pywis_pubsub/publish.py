@@ -219,7 +219,7 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
               help='WIGOS station identifier')
 @click.option('--operation', '-op', type=click.Choice(LINK_TYPES.keys()),
               default='create', help='message operation')
-def publish(ctx, wnm_, config, url, topic, datetime_,
+def publish(ctx, wnm, config, url, topic, datetime_,
             inline=False, geometry=[], metadata_id=None,
             wigos_station_identifier=None, operation='create',
             verbosity='NOTSET'):
