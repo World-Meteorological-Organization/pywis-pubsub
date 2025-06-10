@@ -1,3 +1,18 @@
+pywis-pubsub (0.9.0) noble; urgency=medium
+
+  * Upgrade to Shapely 2
+  * Upgrade to paho-mqtt
+  * set cert handling to None on client init
+  * set WebSockets path when ws/wss is detected
+  * update GRIB/BUFR to IANA approved media types
+  * WNM validation: remove JSON Schema validation in lieu of ETS
+  * WNM generation: s/generated-by/generated_by/g
+  * publish CLI: --datetime parsing
+  * publish CLI: --file -> --wnm)
+  * publish CLI: remove requirement for --identifier
+
+ -- Tom Kralidis <tomkralidis@gmail.com>  Tue, 10 Jun 2025 11:38:54 +0000
+
 pywis-pubsub (0.8.0) noble; urgency=medium
 
   * remove version in lieu of conformsTo
