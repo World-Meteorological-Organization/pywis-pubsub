@@ -205,7 +205,7 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
 @click.pass_context
 @cli_options.OPTION_CONFIG
 @cli_options.OPTION_VERBOSITY
-@click.option('--wnm', '-w', type=click.File(), help='url of data')
+@click.option('--wnm', '-wnm', type=click.File(), help='url of data')
 @click.option('--url', '-u', help='url of data')
 @click.option('--inline', '-in', default=False,
               help='whether to publish the data inline as base64 (default=False)')  # noqa
