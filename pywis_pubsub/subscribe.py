@@ -43,8 +43,8 @@ LOGGER = logging.getLogger(__name__)
 def on_message_handler(client, userdata, msg):
     """message handler"""
 
-    LOGGER.debug(f'Topic: {msg.topic}')
-    LOGGER.debug(f'Message:\n{msg.payload}')
+    LOGGER.info(f'Topic: {msg.topic}')
+    LOGGER.info(f'Message:\n{msg.payload}')
 
     msg_dict = json.loads(msg.payload)
 

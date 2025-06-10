@@ -34,7 +34,7 @@ def OPTION_VERBOSITY(f):
     logging_options = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
 
     def callback(ctx, param, value):
-        value2 = value or 'DEBUG'
+        value2 = value or 'INFO'
         logging.basicConfig(stream=sys.stdout,
                             level=getattr(logging, value2))
         return True
