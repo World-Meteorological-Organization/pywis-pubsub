@@ -27,6 +27,7 @@ import json
 import logging
 import mimetypes
 from typing import Union
+import uuid
 
 import click
 import requests
@@ -204,9 +205,8 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
 @click.pass_context
 @cli_options.OPTION_CONFIG
 @cli_options.OPTION_VERBOSITY
-@click.option('--file', '-f', 'file_', type=click.File(), help='url of data')
+@click.option('--wnm', '-w', type=click.File(), help='url of data')
 @click.option('--url', '-u', help='url of data')
-@click.option('--identifier', '-i', help='unique file identifier')
 @click.option('--inline', '-in', default=False,
               help='whether to publish the data inline as base64 (default=False)')  # noqa
 @click.option('--datetime', '-d', 'datetime_',
@@ -219,7 +219,7 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
               help='WIGOS station identifier')
 @click.option('--operation', '-op', type=click.Choice(LINK_TYPES.keys()),
               default='create', help='message operation')
-def publish(ctx, file_, config, url, topic, datetime_, identifier,
+def publish(ctx, wnm_, config, url, topic, datetime_,
             inline=False, geometry=[], metadata_id=None,
             wigos_station_identifier=None, operation='create',
             verbosity='NOTSET'):
@@ -228,7 +228,7 @@ def publish(ctx, file_, config, url, topic, datetime_, identifier,
     if config is None:
         raise click.ClickException('missing -c/--config')
 
-    if file_ is None and None in [url, identifier]:
+    if wnm is None and url is None:
         raise click.ClickException('missing required arguments')
 
     config = util.yaml_load(config)
@@ -245,11 +245,11 @@ def publish(ctx, file_, config, url, topic, datetime_, identifier,
     else:
         topic2 = topic
 
-    if file_ is not None:
+    if wnm is not None:
         if config.get('validate_message', False):
-            ctx.invoke(validate, message=file_)
-            file_.seek(0)
-        message = json.load(file_)
+            ctx.invoke(validate, message=wnm)
+            wnm.seek(0)
+        message = json.load(wnm)
     else:
         if datetime_ is not None:
             if '/' in datetime_:
@@ -268,7 +268,7 @@ def publish(ctx, file_, config, url, topic, datetime_, identifier,
             topic=topic2,
             content_type=config.get('content_type'),
             url=url,
-            identifier=identifier,
+            identifier=str(uuid.uuid4()),
             inline=inline,
             datetime_=datetime_2,
             start_datetime=start_datetime,
