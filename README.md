@@ -178,6 +178,7 @@ from datetime import datetime, timezone
 
 from pywis_pubsub.mqtt import MQTTPubSubClient
 from pywis_pubsub.publish import create_message
+from pywis_pubsub.ets import WNMTestSuite, WNMKeyPerformanceIndicators
 
 message = create_message(
         topic='foo/bar',
@@ -197,6 +198,9 @@ m.pub(topic, json.dumps(message))
 
 Running KPIs
 ```pycon
+>>> ts = WNMTestSuite(message)
+>>> ts.run_tests()  # raises ValueError error stack on exception
+>>> ts.raise_for_status()  # raises pywis_pubsub.errors.TestSuiteError on exception with list of errors captured in .errors property
 >>> # test KPI
 >>> import json
 >>> from pywis_pubsub.kpi import WNMKeyPerformanceIndicators

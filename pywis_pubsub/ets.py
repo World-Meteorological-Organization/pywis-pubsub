@@ -30,6 +30,7 @@ from jsonschema.validators import Draft202012Validator
 
 
 import pywis_pubsub
+from pywis_pubsub.errors import TestSuiteError
 from pywis_pubsub.schema import MESSAGE_SCHEMA
 from pywis_pubsub.message import get_link
 from pywis_pubsub.util import (get_cli_common_options,
@@ -64,6 +65,7 @@ class WNMTestSuite:
 
         self.test_id = None
         self.message = data
+        self.errors = []
         self.report = []
 
     def run_tests(self, fail_on_schema_validation=False):
@@ -71,6 +73,7 @@ class WNMTestSuite:
 
         results = []
         tests = []
+
         ets_report = {
             'summary': {},
             'generated_by': f'pywis-pubsub {pywis_pubsub.__version__} (https://github.com/World-Meteorological-Organization/pywis-pubsub)'  # noqa
@@ -93,7 +96,10 @@ class WNMTestSuite:
                 raise ValueError(msg)
 
         for t in tests:
-            results.append(getattr(self, t)())
+            result = getattr(self, t)()
+            results.append(result)
+            if result['code'] == 'FAILED':
+                self.errors.append(result)
 
         for code in ['PASSED', 'FAILED', 'SKIPPED']:
             r = len([t for t in results if t['code'] == code])
@@ -105,6 +111,16 @@ class WNMTestSuite:
         return {
             'ets-report': ets_report
         }
+
+    def raise_for_status(self):
+        """
+        Raise error if one or more failures were found during validation.
+
+        :returns: `pywcmp.errors.TestSuiteError` or `None`
+        """
+
+        if len(self.errors) > 0:
+            raise TestSuiteError('Invalid WNM', self.errors)
 
     def test_requirement_validation(self):
         """

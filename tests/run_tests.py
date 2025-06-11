@@ -25,6 +25,7 @@ import unittest
 from unittest.mock import patch
 
 from requests import Session
+from pywis_pubsub.errors import TestSuiteError
 from pywis_pubsub.ets import WNMTestSuite
 from pywis_pubsub.kpi import calculate_grade, WNMKeyPerformanceIndicators
 from pywis_pubsub.verification import verify_data
@@ -125,6 +126,22 @@ class WNMETSTest(unittest.TestCase):
                 record = json.load(fh)
                 ts = WNMTestSuite(record)
                 results = ts.run_tests()
+
+    def test_raise_for_status(self):
+        """Simple test for raise_for_status"""
+
+        with open(get_abspath('test_valid.json')) as fh:
+            ts = WNMTestSuite(json.load(fh))
+            _ = ts.run_tests(fail_on_schema_validation=True)
+
+            assert ts.raise_for_status() is None
+
+        with open(get_abspath('test_invalid_uuid.json')) as fh:
+            ts = WNMTestSuite(json.load(fh))
+            _ = ts.run_tests(fail_on_schema_validation=True)
+
+            with self.assertRaises(TestSuiteError):
+                ts.raise_for_status()
 
 
 class WNMKPITest(unittest.TestCase):
