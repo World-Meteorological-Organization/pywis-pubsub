@@ -1,3 +1,9 @@
+pywis-pubsub (0.9.1) noble; urgency=medium
+
+  * add raise_for_status() functionality for ETS
+
+ -- Tom Kralidis <tomkralidis@gmail.com>  Wed, 11 Jun 2025 09:58:41 +0000
+
 pywis-pubsub (0.9.0) noble; urgency=medium
 
   * Upgrade to Shapely 2
