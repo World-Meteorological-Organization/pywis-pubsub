@@ -120,26 +120,25 @@ cp pub-config-example.yml pub-local.yml
 vim pub-local.yml # update accordingly to configure publishing options
 
 # example publishing a WIS2 notification message with attributes: 
-# unique-id=stationXYZ-20221111085500 
 # data-url=http://www.meteo.xx/stationXYZ-20221111085500.bufr4 
 # lon,lat,elevation=33.8,11.8,112
 # wigos_station_identifier=0-20000-12345
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -i stationXYZ-20221111085500 -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345
+pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345
 
 # publish a message with a WCMP2 metadata id
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -i stationXYZ-20221111085500 -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001"
+pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001"
 
 # publish a message with a datetime (instant)
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -i stationXYZ-20221111085500 -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --datetime 2024-01-08T22:56:23Z
+pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --datetime 2024-01-08T22:56:23Z
 
 # publish a message with a start and end datetime (extent)
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -i stationXYZ-20221111085500 -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --datetime 2024-01-08T20:56:23Z/2024-01-08T22:56:43Z
+pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --datetime 2024-01-08T20:56:23Z/2024-01-08T22:56:43Z
 
 # publish a message as a data update
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -i stationXYZ-20221111085500 -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --operation update
+pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --operation update
 
 # publish a message as a data deletion
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -i stationXYZ-20221111085500 -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --operation delete
+pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --operation delete
 
 # publish a message from file on disk
 pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml --wnm my_message.json
