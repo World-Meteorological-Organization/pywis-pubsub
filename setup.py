@@ -90,6 +90,9 @@ setup(
     maintainer_email='tomkraldis@gmail.com',
     url='https://github.com/World-Meteorological-Organization/pywis-pubsub',
     install_requires=read('requirements.txt').splitlines(),
+    extras_require={
+        'backend-s3': read('requirements-s3.txt').splitlines(),
+    },
     packages=find_packages(),
     include_package_data=True,
     entry_points={
