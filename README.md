@@ -13,7 +13,11 @@ The easiest way to install pywis-pubsub is via the Python [pip](https://pip.pypa
 utility:
 
 ```bash
+# default install
 pip3 install pywis-pubsub
+
+# install with storage spport for S3
+pip3 install pywis-pubsub[backend-s3]
 ```
 
 ### Requirements
