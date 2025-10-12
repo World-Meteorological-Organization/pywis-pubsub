@@ -161,7 +161,7 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
                 },
             },
             'links': [{
-                'rel': 'canonical',
+                'rel': LINK_TYPES[operation],
                 'type': content_type2,
                 'href': url,
                 'length': file_info['size']
@@ -175,14 +175,6 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
     else:
         LOGGER.debug('Setting time instant')
         message['properties']['datetime'] = datetime_
-
-    if operation != 'create':
-        message['links'].append({
-            'rel': LINK_TYPES[operation],
-            'type': content_type2,
-            'href': url,
-            'length': file_info['size']
-        })
 
     if file_info.get('data') is not None and inline:
         LOGGER.debug('Including data inline via properties.content')
