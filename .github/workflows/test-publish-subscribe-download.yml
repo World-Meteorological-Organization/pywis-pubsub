@@ -22,8 +22,7 @@ jobs:
           docker run --rm -d -p 1883:1883 -v $PWD/.github/workflows/test-data/mosquitto.conf:/mosquitto/config/mosquitto.conf --name pywis_pubsub-mqtt eclipse-mosquitto
       - name: run tests
         run: |
-          cd tests
-          python3 run_tests.py
+          python3 tests/run_tests.py
       - name: subscribe, publish and download without message validation
         run: |
           rm -rf .github/workflows/test-data/*.bufr4
