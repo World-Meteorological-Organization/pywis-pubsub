@@ -5,13 +5,13 @@ on:
     
 jobs:
   test-publish-subscribe-download:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         name: setup Python
         with:
-          python-version: '3.10'
+          python-version: '3.12'
       - name: Install pywis-pubsub
         run: |
           pip3 install .
@@ -22,7 +22,8 @@ jobs:
           docker run --rm -d -p 1883:1883 -v $PWD/.github/workflows/test-data/mosquitto.conf:/mosquitto/config/mosquitto.conf --name pywis_pubsub-mqtt eclipse-mosquitto
       - name: run tests
         run: |
-          python3 setup.py test
+          cd tests
+          python3 run_tests.py
       - name: subscribe, publish and download without message validation
         run: |
           rm -rf .github/workflows/test-data/*.bufr4
