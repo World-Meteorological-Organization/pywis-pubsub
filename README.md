@@ -44,7 +44,7 @@ source bin/activate
 # clone codebase and install
 git clone https://github.com/World-Meteorological-Organization/pywis-pubsub.git
 cd pywis-pubsub
-python3 setup.py install
+pip3 install .
 ```
 
 ## Running
@@ -222,11 +222,8 @@ Running KPIs
 # install dev requirements
 pip3 install -r requirements-dev.txt
 
-# run tests like this:
+# run tests
 python3 tests/run_tests.py
-
-# or this:
-python3 setup.py test
 ```
 
 ## Releasing
