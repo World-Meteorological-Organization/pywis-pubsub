@@ -1,3 +1,10 @@
+pywis-pubsub (0.11.0) noble; urgency=medium
+
+  * update to Python 3.12 and Ubuntu 24.04
+  * move cached schema into live only on success
+
+ -- Tom Kralidis <tomkralidis@gmail.com>  Thu, 18 Dec 2025 13:05:42 +0000
+
 pywis-pubsub (0.10.0) noble; urgency=medium
 
   * update WNM publishing to provide a single canonical/update/deletion link
