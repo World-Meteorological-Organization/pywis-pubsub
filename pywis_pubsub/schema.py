@@ -23,6 +23,7 @@ import click
 import logging
 from pathlib import Path
 import shutil
+import tempfile
 from urllib.request import urlopen
 
 from pywis_pubsub import cli_options
@@ -31,7 +32,12 @@ LOGGER = logging.getLogger(__name__)
 
 MESSAGE_SCHEMA_URL = 'https://raw.githubusercontent.com/wmo-im/wis2-notification-message/main/schemas/wis2-notification-message-bundled.json'  # noqa
 USERDIR = Path.home() / '.pywis-pubsub'
+
+TEMPDIR = tempfile.TemporaryDirectory()
+TEMPDIR2 = Path(tempfile.TemporaryDirectory().name)
+
 MESSAGE_SCHEMA = USERDIR / 'wis2-notification-message' / 'wis2-notification-message-bundled.json'  # noqa
+MESSAGE_SCHEMA_TEMP = TEMPDIR2 / 'wis2-notification-message' / 'wis2-notification-message-bundled.json'  # noqa
 
 
 def sync_schema() -> None:
@@ -41,16 +47,26 @@ def sync_schema() -> None:
     :returns: `None`
     """
 
+    TEMPDIR = tempfile.TemporaryDirectory()
+    TEMPDIR2 = Path(tempfile.TemporaryDirectory().name)
+
     LOGGER.debug('Syncing notification message schema')
 
+    MESSAGE_SCHEMA_TEMP.parent.mkdir(parents=True, exist_ok=True)
+    LOGGER.debug('Downloading message schema')
+    with MESSAGE_SCHEMA_TEMP.open('wb') as fh:
+        fh.write(urlopen(MESSAGE_SCHEMA_URL).read())
+
+    LOGGER.debug(f'Removing {USERDIR}')
     if MESSAGE_SCHEMA.parent.exists():
         shutil.rmtree(USERDIR)
 
+    LOGGER.debug(f'Moving files from {TEMPDIR2} to {USERDIR}')
     MESSAGE_SCHEMA.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(MESSAGE_SCHEMA_TEMP, MESSAGE_SCHEMA)
 
-    LOGGER.debug('Downloading message schema')
-    with MESSAGE_SCHEMA.open('wb') as fh:
-        fh.write(urlopen(MESSAGE_SCHEMA_URL).read())
+    LOGGER.debug(f'Cleaning up {TEMPDIR}')
+    TEMPDIR.cleanup()
 
 
 @click.group()
