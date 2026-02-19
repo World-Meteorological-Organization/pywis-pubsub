@@ -232,6 +232,13 @@ def publish(ctx, wnm, config, url, topic, datetime_,
     broker = config.get('broker')
     qos = int(config.get('qos', 1))
 
+    options = {
+        'verify_certs': config.get('verify_certs', True),
+        'certfile': config.get('certfile'),
+        'keyfile': config.get('keyfile'),
+        'client_id': config.get('client_id')
+    }
+
     if topic is None:
         topic2 = config.get('publish_topic')
     else:
@@ -271,7 +278,7 @@ def publish(ctx, wnm, config, url, topic, datetime_,
             operation=operation
         )
 
-    client = MQTTPubSubClient(broker)
+    client = MQTTPubSubClient(broker, options)
     click.echo(f'Connected to broker {client.broker_safe_url}')
     click.echo(f'Publishing message to topic={topic2}')
     client.pub(topic2, json.dumps(message, default=util.json_serial), qos)
