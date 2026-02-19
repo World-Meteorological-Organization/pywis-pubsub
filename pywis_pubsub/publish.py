@@ -69,16 +69,17 @@ def generate_checksum(data: bytes, algorithm: SecureHashAlgorithms) -> str:
     return b64_digest
 
 
-def get_file_info(public_data_url: str) -> dict:
+def get_file_info(public_data_url: str, verify_ssl=True) -> dict:
     """
     get filename, length and calculate checksum from public URL
 
     :param public_data_url: `str` defining publicly accessible URL
+    :param verify_ssl: `bool` or CA filename; passed to requests.get()
 
     :returns: `dict` of file information
     """
 
-    res = requests.get(public_data_url)
+    res = requests.get(public_data_url, verify=verify_ssl)
     # raise HTTPError, if on occurred:
     res.raise_for_status()
 
@@ -104,7 +105,8 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
                    end_datetime: datetime = None,
                    metadata_id: str = None,
                    wigos_station_identifier: str = None,
-                   operation: Union[str] = 'create') -> dict:
+                   operation: Union[str] = 'create',
+                   verify_ssl=True) -> dict:
     """
     Create WIS2 compliant message
 
@@ -121,6 +123,7 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
     :param metadata_id: `str` of WCMP2 metadata record identifier
     :param wigos_station_identifier: `str` of WSI for station as used in OSCAR
     :param operation: `str` of message operation
+    :param verify_ssl: `bool` or CA filename; passed to requests.get()
 
     :returns: `dict` of message
     """
@@ -129,7 +132,7 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
 
     # get filename, length and calculate checksum
     # raises HTTPError if file can not be accessed
-    file_info = get_file_info(url)
+    file_info = get_file_info(url, verify_ssl=verify_ssl)
 
     if geometry:
         geometry2 = {
@@ -211,10 +214,12 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
               help='WIGOS station identifier')
 @click.option('--operation', '-op', type=click.Choice(LINK_TYPES.keys()),
               default='create', help='message operation')
+@click.option('--insecure', is_flag=True, default=False,
+              help='Disable SSL certificate verification (not recommended for production)')
 def publish(ctx, wnm, config, url, topic, datetime_,
             inline=False, geometry=[], metadata_id=None,
             wigos_station_identifier=None, operation='create',
-            verbosity='NOTSET'):
+            insecure=False, verbosity='NOTSET'):
     """Publish a WIS2 Notification Message"""
 
     if config is None:
@@ -231,6 +236,7 @@ def publish(ctx, wnm, config, url, topic, datetime_,
 
     broker = config.get('broker')
     qos = int(config.get('qos', 1))
+    verify_ssl = not insecure
 
     if topic is None:
         topic2 = config.get('publish_topic')
@@ -268,7 +274,8 @@ def publish(ctx, wnm, config, url, topic, datetime_,
             geometry=geometry,
             metadata_id=metadata_id,
             wigos_station_identifier=wigos_station_identifier,
-            operation=operation
+            operation=operation,
+            verify_ssl=verify_ssl
         )
 
     client = MQTTPubSubClient(broker)
