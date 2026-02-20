@@ -183,10 +183,12 @@ from pywis_pubsub.mqtt import MQTTPubSubClient
 from pywis_pubsub.publish import create_message
 from pywis_pubsub.ets import WNMTestSuite, WNMKeyPerformanceIndicators
 
+url_info = get_url_info('http://www.meteo.xx/stationXYZ-20221111085500.bufr4')
+
 message = create_message(
         topic='foo/bar',
         content_type='application/bufr',
-        url='http://www.meteo.xx/stationXYZ-20221111085500.bufr4', 
+        url_info=url_info,
         identifier='stationXYZ-20221111085500', 
         datetime_=datetime.now(timezone.utc),
         geometry=[33.8, -11.8, 123],
