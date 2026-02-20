@@ -69,35 +69,39 @@ def generate_checksum(data: bytes, algorithm: SecureHashAlgorithms) -> str:
     return b64_digest
 
 
-def get_file_info(public_data_url: str) -> dict:
+def get_url_info(url: str, verify: bool = True) -> dict:
     """
     get filename, length and calculate checksum from public URL
 
-    :param public_data_url: `str` defining publicly accessible URL
+    :param url: `str` defining publicly accessible URL
+    :param verify: `bool` whether to perform
+                   certification verification (default `True`)
 
     :returns: `dict` of file information
     """
 
-    res = requests.get(public_data_url)
+    res = requests.get(url, verify=verify)
     # raise HTTPError, if on occurred:
     res.raise_for_status()
 
     filebytes = res.content
     checksum_type = SecureHashAlgorithms.sha512.value
-    file_info = {
-        'filename': public_data_url.split('/')[-1],
+    url_info = {
+        'url': url,
+        'filename': url.split('/')[-1],
         'checksum_value': generate_checksum(filebytes, checksum_type),
         'checksum_type': checksum_type,
         'size': len(filebytes)
     }
 
     if len(filebytes) < 4096:
-        file_info['data'] = base64.b64encode(filebytes)
+        url_info['data'] = base64.b64encode(filebytes)
 
-    return file_info
+    return url_info
 
 
-def create_message(topic: str, content_type: str, url: str, identifier: str,
+def create_message(topic: str, content_type: str,
+                   url_info: dict, identifier: str,
                    inline: bool = False, geometry: list = [],
                    datetime_: datetime = None,
                    start_datetime: datetime = None,
@@ -109,15 +113,16 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
     Create WIS2 compliant message
 
     :param topic: `str` of topic
-    :param url: `str` of url pointing to data
-    :param identifier: `str` of unique-id to help global broker deduplicate data  # noqa
+    :param url_info: `dict` of url information (url, filename, checksum type,
+                     checksum value, size)
+    :param identifier: `str` of unique id
     :param inline: `bool` of whether to publish the data inline as base64
-             (default False)
+                   (default False)
     :param datetime_: `datetime` object of data (time instant)
     :param start_datetime: `datetime` object of start date
     :param end_datetime: `datetime` object of end date
     :param geometry: point array defining longitude,latitude,elevation
-               (elevation is optional)
+                     (elevation is optional)
     :param metadata_id: `str` of WCMP2 metadata record identifier
     :param wigos_station_identifier: `str` of WSI for station as used in OSCAR
     :param operation: `str` of message operation
@@ -126,10 +131,6 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
     """
 
     publish_datetime = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-
-    # get filename, length and calculate checksum
-    # raises HTTPError if file can not be accessed
-    file_info = get_file_info(url)
 
     if geometry:
         geometry2 = {
@@ -140,7 +141,7 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
         geometry2 = None
 
     if content_type is None:
-        content_type2 = mimetypes.guess_type(url)[0]
+        content_type2 = mimetypes.guess_type(url_info['url'])[0]
         if content_type2 is None:
             LOGGER.warning('Unknown content type')
             content_type2 = 'application/octet-stream'
@@ -153,18 +154,18 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
             'conformsTo': ['http://wis.wmo.int/spec/wnm/1/conf/core'],
             'geometry': geometry2,
             'properties': {
-                'data_id': f"{topic}/{file_info['filename']}",
+                'data_id': f"{topic}/{url_info['filename']}",
                 'pubtime': publish_datetime,
                 'integrity': {
-                    'method': file_info['checksum_type'],
-                    'value': file_info['checksum_value']
+                    'method': url_info['checksum_type'],
+                    'value': url_info['checksum_value']
                 },
             },
             'links': [{
                 'rel': LINK_TYPES[operation],
                 'type': content_type2,
-                'href': url,
-                'length': file_info['size']
+                'href': url_info['url'],
+                'length': url_info['size']
             }]
     }
 
@@ -176,12 +177,12 @@ def create_message(topic: str, content_type: str, url: str, identifier: str,
         LOGGER.debug('Setting time instant')
         message['properties']['datetime'] = datetime_
 
-    if file_info.get('data') is not None and inline:
+    if url_info.get('data') is not None and inline:
         LOGGER.debug('Including data inline via properties.content')
         message['properties']['content'] = {
             'encoding': 'base64',
-            'value': file_info['data'],
-            'size': file_info['size']
+            'value': url_info['data'],
+            'size': url_info['size']
         }
 
     if metadata_id is not None:
@@ -232,6 +233,13 @@ def publish(ctx, wnm, config, url, topic, datetime_,
     broker = config.get('broker')
     qos = int(config.get('qos', 1))
 
+    options = {
+        'verify_certs': config.get('verify_certs', True),
+        'certfile': config.get('certfile'),
+        'keyfile': config.get('keyfile'),
+        'client_id': config.get('client_id')
+    }
+
     if topic is None:
         topic2 = config.get('publish_topic')
     else:
@@ -256,10 +264,12 @@ def publish(ctx, wnm, config, url, topic, datetime_,
                 datetime_2 = datetime.strptime(
                     datetime_, '%Y-%m-%dT%H:%M:%SZ')
 
+        url_info = get_url_info(url, options['verify_certs'])
+
         message = create_message(
             topic=topic2,
             content_type=config.get('content_type'),
-            url=url,
+            url_info=url_info,
             identifier=str(uuid.uuid4()),
             inline=inline,
             datetime_=datetime_2,
@@ -271,7 +281,7 @@ def publish(ctx, wnm, config, url, topic, datetime_,
             operation=operation
         )
 
-    client = MQTTPubSubClient(broker)
+    client = MQTTPubSubClient(broker, options)
     click.echo(f'Connected to broker {client.broker_safe_url}')
     click.echo(f'Publishing message to topic={topic2}')
     client.pub(topic2, json.dumps(message, default=util.json_serial), qos)
