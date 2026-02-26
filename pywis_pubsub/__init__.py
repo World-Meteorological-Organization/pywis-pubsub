@@ -19,8 +19,6 @@
 #
 ###############################################################################
 
-__version__ = '0.13.dev0'
-
 import click
 
 from pywis_pubsub.ets import ets
@@ -28,7 +26,10 @@ from pywis_pubsub.kpi import kpi
 from pywis_pubsub.publish import publish
 from pywis_pubsub.schema import schema
 from pywis_pubsub.subscribe import subscribe
+from pywis_pubsub.util import get_package_version
 from pywis_pubsub.verification import verify
+
+__version__ = get_package_version()
 
 
 @click.group()
