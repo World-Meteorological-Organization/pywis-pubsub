@@ -22,6 +22,7 @@
 from base64 import b64encode
 from datetime import date, datetime, time, timezone
 from decimal import Decimal
+import importlib.metadata
 import logging
 import mimetypes
 import os
@@ -257,3 +258,13 @@ def get_current_datetime_rfc3339() -> str:
     """
 
     return datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+def get_package_version() -> str:
+    """
+    Helper function to get package version
+
+    :returns: `str` of version of package
+    """
+
+    return importlib.metadata.version('pywis-pubsub')

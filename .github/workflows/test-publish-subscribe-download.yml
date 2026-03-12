@@ -15,6 +15,7 @@ jobs:
       - name: Install pywis-pubsub
         run: |
           pip3 install .
+          pip3 install ".[test]"
           pywis-pubsub --version
           pywis-pubsub schema sync
       - name: run mosquitto container, detached

@@ -25,13 +25,11 @@ pip3 install pywis-pubsub[backend-s3]
 - [virtualenv](https://virtualenv.pypa.io)
 
 ### Dependencies
-Dependencies are listed in [requirements.txt](requirements.txt). Dependencies
+Dependencies are listed in [pyproject.toml](pyproject.toml). Dependencies
 are automatically installed during pywis-pubsub installation.
 
 #### Windows installations
-Note that you will need Cython and [Shapely Windows wheels](https://pypi.org/project/shapely/#files) for windows for your architecture
-prior to installing pywis-pubsub.
-
+Note that you will need Cython and [Shapely Windows wheels](https://pypi.org/project/shapely/#files) for windows for your architecture prior to installing pywis-pubsub.
 
 ### Installing pywis-pubsub
 
@@ -221,10 +219,7 @@ Running KPIs
 ### Running Tests
 
 ```bash
-# install dev requirements
-pip3 install -r requirements-dev.txt
-
-# run tests
+pip3 install ".[tests]"
 python3 tests/run_tests.py
 ```
 
@@ -232,8 +227,7 @@ python3 tests/run_tests.py
 
 ```bash
 # create release (x.y.z is the release version)
-vi pywis_pubsub/__init__.py  # update __version__
-vi debian/changelog  # add changelog entry
+vi pyproject.toml  # update [project]/version
 git commit -am 'update release version x.y.z'
 git push origin main
 git tag -a x.y.z -m 'tagging release version x.y.z'
@@ -241,14 +235,13 @@ git push --tags
 
 # upload to PyPI
 rm -fr build dist *.egg-info
-python3 setup.py sdist bdist_wheel --universal
+python3 -m build
 twine upload dist/*
 
 # publish release on GitHub (https://github.com/World-Meteorological-Organization/pywis-pubsub/releases/new)
 
 # bump version back to dev
-vi pywis_pubsub/__init__.py  # update __version__
-git commit -am 'back to dev'
+vi pyproject.toml  # update [project]/version
 git push origin main
 ```
 
