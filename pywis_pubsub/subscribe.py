@@ -144,10 +144,6 @@ def on_message_handler(client, userdata, msg):
         storage_class = STORAGES[userdata.get('storage').get('type')]
         storage_object = storage_class(userdata['storage'])
 
-        if not msg_dict['properties'].get('cache', True):
-            LOGGER.debug(f'No caching requested; not saving {filename}')
-            return
-
         if link.get('rel') == 'deletion':
             LOGGER.debug('Delete specified')
             storage_object.delete(filename)
