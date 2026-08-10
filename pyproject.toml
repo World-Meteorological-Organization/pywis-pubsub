@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pywis-pubsub"
-version = "0.13.dev0"
+version = "0.12.1"
 description = "pywis-pubsub provides subscription and download capability of WMO data from WIS2 infrastructure services"
 readme = "README.md"
 requires-python = ">=3.12"
