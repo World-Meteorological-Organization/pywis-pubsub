@@ -31,8 +31,8 @@ from jsonschema.validators import Draft202012Validator
 
 import pywis_pubsub
 from pywis_pubsub.errors import TestSuiteError
-from pywis_pubsub.schema import MESSAGE_SCHEMA
-from pywis_pubsub.message import get_link
+from pywis_pubsub.bundle import WNM_MESSAGE_SCHEMA
+from pywis_pubsub.wnm.message import get_link
 from pywis_pubsub.util import (get_cli_common_options,
                                get_current_datetime_rfc3339, urlopen_)
 
@@ -52,7 +52,7 @@ def gen_test_id(test_id: str) -> str:
 
 
 class WNMTestSuite:
-    """Test suite for WIS Notification Message"""
+    """Test suite for WIS2 Notification Message"""
 
     def __init__(self, data: dict):
         """
@@ -60,7 +60,7 @@ class WNMTestSuite:
 
         :param data: dict of WNM JSON
 
-        :returns: `pywis_pubsub.ets.WNMTestSuite`
+        :returns: `pywis_pubsub.wnm.ets.WNMTestSuite`
         """
 
         self.test_id = None
@@ -122,6 +122,22 @@ class WNMTestSuite:
         if len(self.errors) > 0:
             raise TestSuiteError('Invalid WNM', self.errors)
 
+    def test_requirement_message_size(self):
+        """
+        Check for the existence of a valid message size.
+        """
+
+        status = {
+            'id': gen_test_id('message_size'),
+            'code': 'PASSED',
+        }
+
+        if len(json.dumps(self.message)) > 8192:
+            status['code'] = 'FAILED'
+            status['message'] = 'Message size exceeds 8192 bytes'
+
+        return status
+
     def test_requirement_validation(self):
         """
         Validate that a WNM is valid to the authoritative WNM schema.
@@ -134,13 +150,13 @@ class WNMTestSuite:
             'code': 'PASSED'
         }
 
-        if not MESSAGE_SCHEMA.exists():
-            msg = "WNM schema missing. Run 'pywis-pubsub schema sync' to cache"
+        if not WNM_MESSAGE_SCHEMA.exists():
+            msg = "WNM schema missing. Run 'pywis-pubsub bundle sync' to cache"
             LOGGER.error(msg)
             raise RuntimeError(msg)
 
-        with MESSAGE_SCHEMA.open() as fh:
-            LOGGER.debug(f'Validating {self.message} against {MESSAGE_SCHEMA}')
+        with WNM_MESSAGE_SCHEMA.open() as fh:
+            LOGGER.debug(f'Validating {self.message} against {WNM_MESSAGE_SCHEMA}')  # noqa
             validator = Draft202012Validator(json.load(fh))
 
             for error in validator.iter_errors(self.message):

@@ -29,7 +29,7 @@ import click
 import requests
 
 import pywis_pubsub
-from pywis_pubsub.ets import WNMTestSuite
+from pywis_pubsub.wnm.ets import WNMTestSuite
 from pywis_pubsub .util import (get_cli_common_options,
                                 get_current_datetime_rfc3339, urlopen_)
 

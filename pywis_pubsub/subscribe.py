@@ -28,13 +28,14 @@ import click
 
 from pywis_pubsub import cli_options
 from pywis_pubsub import util
-from pywis_pubsub.ets import WNMTestSuite
+from pywis_pubsub.wmem.ets import WMEMTestSuite
+from pywis_pubsub.wnm.ets import WNMTestSuite
 from pywis_pubsub.geometry import is_message_within_bbox
 from pywis_pubsub.hook import load_hook
-from pywis_pubsub.message import get_link, get_data
+from pywis_pubsub.wnm.message import get_link, get_data
 from pywis_pubsub.mqtt import MQTTPubSubClient
 from pywis_pubsub.storage import STORAGES
-from pywis_pubsub.verification import data_verified
+from pywis_pubsub.wnm.verification import data_verified
 
 
 LOGGER = logging.getLogger(__name__)
@@ -48,115 +49,126 @@ def on_message_handler(client, userdata, msg):
 
     msg_dict = json.loads(msg.payload)
 
+    if 'http://wis.wmo.int/spec/wnm/1/conf/core' in msg_dict.get('conformsTo', []):  # noqa
+        mtype = 'wnm'
+    elif 'http://wis.wmo.int/spec/wme/1/conf/monitoring-event-message-core' in msg_dict.get('data', {}).get('conformsTo', []):  # noqa
+        mtype = 'wmem'
+
     try:
         if userdata.get('validate_message', False):
             LOGGER.debug('Validating message')
 
-            ts = WNMTestSuite(msg_dict)
+            if mtype == 'wnm':
+                ts = WNMTestSuite(msg_dict)
+            elif mtype == 'wmem':
+                ts = WMEMTestSuite(msg_dict)
+
             _ = ts.run_tests(fail_on_schema_validation=True)
 
     except Exception as err:
         LOGGER.error(f'Cannot validate message: {err}')
         return
 
-    if userdata.get('bbox') and msg_dict.get('geometry') is not None:
-        LOGGER.debug('Performing spatial filtering')
-        if not bool(msg_dict['geometry']):
-            LOGGER.error(f"Invalid geometry: {msg_dict['geometry']}")
-            return
-        if is_message_within_bbox(msg_dict['geometry'], userdata['bbox']):
-            LOGGER.debug('Message geometry is within bbox')
-        else:
-            LOGGER.debug('Message geometry not within bbox; skipping')
-            return
-
-    clink = get_link(msg_dict['links'])
-    if not clink:
-        LOGGER.warning('No valid data link found')
-        return
-
-    LOGGER.info(f"Received message with data URL: {clink.get('href')}")
-
-    if userdata.get('storage') is not None:
-        LOGGER.debug('Saving data')
-        try:
-            LOGGER.debug('Downloading data')
-            data = get_data(msg_dict, userdata.get('verify_certs'))
-        except Exception as err:
-            LOGGER.error(err)
-            return
-        if ('integrity' in msg_dict['properties'] and
-                userdata.get('verify_data', True)):
-            LOGGER.debug('Verifying data')
-
-            method = msg_dict['properties']['integrity']['method']
-            value = msg_dict['properties']['integrity']['value']
-            if 'content' in msg_dict['properties']:
-                size = msg_dict['properties']['content']['size']
-            else:
-                size = clink['length']
-
-            LOGGER.debug(method)
-            if not data_verified(data, size, method, value):
-                LOGGER.error('Data verification failed; not saving')
+    if mtype == 'wnm':
+        if userdata.get('bbox') and msg_dict.get('geometry') is not None:
+            LOGGER.debug('Performing spatial filtering')
+            if not bool(msg_dict['geometry']):
+                LOGGER.error(f"Invalid geometry: {msg_dict['geometry']}")
                 return
+            if is_message_within_bbox(msg_dict['geometry'], userdata['bbox']):
+                LOGGER.debug('Message geometry is within bbox')
             else:
-                LOGGER.debug('Data verification passed')
+                LOGGER.debug('Message geometry not within bbox; skipping')
+                return
 
-        filepath = userdata['storage']['options'].get('filepath', 'data_id')
-        LOGGER.debug(f'Using {filepath} for naming filepath')
+        clink = get_link(msg_dict['links'])
+        if not clink:
+            LOGGER.warning('No valid data link found')
+            return
 
-        link = get_link(msg_dict['links'])
+        LOGGER.info(f"Received message with data URL: {clink.get('href')}")
 
-        if filepath == 'link':
-            LOGGER.debug('Using link as filepath')
-            # fetch link and use local path, stripping slashes
-            filename = link['href'].split('/', 3)[-1].strip('/')
-        elif filepath == 'combined':
-            LOGGER.debug('Using combined data_id+link extension as filepath')
-            filename = msg_dict['properties']['data_id']
-            suffix = Path(link).suffix
-            if suffix != '':
-                LOGGER.debug(f'File extension found: {suffix}')
-                filename = f'{filename}{suffix}'
-            else:
-                LOGGER.debug('File extension not found. Trying media type')
-                media_type = link.get('type')
-                if media_type is not None:
-                    suffix = util.guess_extension(media_type)
-                    if suffix is not None:
-                        filename = f'{filename}{suffix}'
-                    else:
-                        LOGGER.debug('No extension found. Giving up / using data_id')  # noqa
+        if userdata.get('storage') is not None:
+            LOGGER.debug('Saving data')
+            try:
+                LOGGER.debug('Downloading data')
+                data = get_data(msg_dict, userdata.get('verify_certs'))
+            except Exception as err:
+                LOGGER.error(err)
+                return
+            if ('integrity' in msg_dict['properties'] and
+                    userdata.get('verify_data', True)):
+                LOGGER.debug('Verifying data')
+
+                method = msg_dict['properties']['integrity']['method']
+                value = msg_dict['properties']['integrity']['value']
+                if 'content' in msg_dict['properties']:
+                    size = msg_dict['properties']['content']['size']
                 else:
-                    LOGGER.debug('No media type found. Giving up / using data_id')  # noqa
-        else:
-            LOGGER.debug('Using data_id as filepath')
-            filename = msg_dict['properties'].get('data_id')
-            if filename is None:
-                LOGGER.error('no data_id found')
-                return
+                    size = clink['length']
 
-        LOGGER.debug(f'filename: {filename}')
+                LOGGER.debug(method)
+                if not data_verified(data, size, method, value):
+                    LOGGER.error('Data verification failed; not saving')
+                    return
+                else:
+                    LOGGER.debug('Data verification passed')
 
-        content_type = link.get('type', 'application/octet-stream')
+            filepath = userdata['storage']['options'].get(
+                'filepath', 'data_id')
+            LOGGER.debug(f'Using {filepath} for naming filepath')
 
-        storage_class = STORAGES[userdata.get('storage').get('type')]
-        storage_object = storage_class(userdata['storage'])
+            link = get_link(msg_dict['links'])
 
-        if link.get('rel') == 'deletion':
-            LOGGER.debug('Delete specified')
-            storage_object.delete(filename)
-        elif link.get('rel') == 'update':
-            LOGGER.debug('Update specified')
-            storage_object.save(data, filename, content_type)
-        else:
-            if storage_object.exists(filename):
-                LOGGER.debug('Duplicate detected; not saving')
-                return
+            if filepath == 'link':
+                LOGGER.debug('Using link as filepath')
+                # fetch link and use local path, stripping slashes
+                filename = link['href'].split('/', 3)[-1].strip('/')
+            elif filepath == 'combined':
+                LOGGER.debug('Using combined data_id+link extension as filepath')  # noqa
+                filename = msg_dict['properties']['data_id']
+                suffix = Path(link).suffix
+                if suffix != '':
+                    LOGGER.debug(f'File extension found: {suffix}')
+                    filename = f'{filename}{suffix}'
+                else:
+                    LOGGER.debug('File extension not found. Trying media type')
+                    media_type = link.get('type')
+                    if media_type is not None:
+                        suffix = util.guess_extension(media_type)
+                        if suffix is not None:
+                            filename = f'{filename}{suffix}'
+                        else:
+                            LOGGER.debug('No extension found. Giving up / using data_id')  # noqa
+                    else:
+                        LOGGER.debug('No media type found. Giving up / using data_id')  # noqa
+            else:
+                LOGGER.debug('Using data_id as filepath')
+                filename = msg_dict['properties'].get('data_id')
+                if filename is None:
+                    LOGGER.error('no data_id found')
+                    return
 
-            LOGGER.debug('Saving')
-            storage_object.save(data, filename, content_type)
+            LOGGER.debug(f'filename: {filename}')
+
+            content_type = link.get('type', 'application/octet-stream')
+
+            storage_class = STORAGES[userdata.get('storage').get('type')]
+            storage_object = storage_class(userdata['storage'])
+
+            if link.get('rel') == 'deletion':
+                LOGGER.debug('Delete specified')
+                storage_object.delete(filename)
+            elif link.get('rel') == 'update':
+                LOGGER.debug('Update specified')
+                storage_object.save(data, filename, content_type)
+            else:
+                if storage_object.exists(filename):
+                    LOGGER.debug('Duplicate detected; not saving')
+                    return
+
+                LOGGER.debug('Saving')
+                storage_object.save(data, filename, content_type)
 
     if userdata.get('hook') is not None:
         LOGGER.debug(f"Hook detected: {userdata['hook']}")

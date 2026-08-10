@@ -34,9 +34,9 @@ import requests
 
 from pywis_pubsub import cli_options
 from pywis_pubsub import util
-from pywis_pubsub.message import LINK_TYPES
+from pywis_pubsub.wnm.message import LINK_TYPES
 from pywis_pubsub.mqtt import MQTTPubSubClient
-from pywis_pubsub.ets import validate
+from pywis_pubsub.wnm.ets import validate
 
 
 LOGGER = logging.getLogger(__name__)

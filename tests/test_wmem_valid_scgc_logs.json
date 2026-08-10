@@ -1,0 +1,29 @@
+{
+    "specversion": "1.0",
+    "type": "int.wmo.wis.wme.event",
+    "source": "fr-meteofrance-sensor-centre-global-cache",
+    "subject": "fr-meteofrance-sensor-centre-global-cache",
+    "id": "6e1c7f9f-dd6c-48d9-bbc4-aef0625f1fb8",
+    "time": "2025-10-31T22:03:04Z",
+    "datacontenttype": "application/json",
+    "dataschema": "https://raw.githubusercontent.com/wmo-im/wis2-monitoring-events/refs/heads/main/schemas/wis2-event-message-bundled.json",
+    "data": {
+        "severity": "INFO",
+        "conformsTo": [
+            "http://wis.wmo.int/spec/wme/1/conf/monitoring-event-message-core"
+        ],
+        "time": {
+            "interval": [
+                "2025-10-31T21:00:00Z",
+                "2025-10-30T22:00:00Z"
+            ]
+        },
+        "links": [
+            {
+                "rel": "canonical",
+                "type": "text/plain",
+                "href": "https://example.org/logs.txt"
+            }
+        ]
+    }
+}

@@ -20,6 +20,7 @@
 ###############################################################################
 
 from base64 import b64encode
+import csv
 from datetime import date, datetime, time, timezone
 from decimal import Decimal
 import importlib.metadata
@@ -268,3 +269,28 @@ def get_package_version() -> str:
     """
 
     return importlib.metadata.version('pywis-pubsub')
+
+
+def get_codelist(filepath: Path) -> list:
+    """
+    Helper function to derive a CSV codelist
+
+
+    :param filepath: `Path` of CSV file
+    :returns: `list` of all codelist 'Name' columns
+    """
+
+    names = []
+
+    if not filepath.exists():
+        msg = f'File {filepath} missing. Run "pywcmp bundle sync"'
+        LOGGER.error(msg)
+        raise RuntimeError(msg)
+
+    with filepath.open() as fh:
+        LOGGER.debug(f'Reading codelist file {fh}')
+        reader = csv.reader(fh)
+        for row in reader:
+            names.append(row[0])
+
+    return names
