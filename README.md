@@ -59,9 +59,9 @@ cp pywis-pubsub-config.yml local.yml
 vim local.yml # update accordingly to configure subscribe options
 ```
 
-### WIS2 Notification Message (WNM) workflow
 
-#### Subscribing
+### Subscribing
+
 
 ```bash
 # sync WIS2 notification and monitoring event schemas
@@ -80,14 +80,16 @@ pywis-pubsub subscribe --config local.yml --bbox=-142,42,-52,84
 pywis-pubsub subscribe --config local.yml --bbox=-142,42,-52,84 --verbosity=DEBUG
 ```
 
+### WIS2 Notification Message (WNM) workflow
+
 #### Validating a message and verifying data
 
 ```bash
 # validate a message
-pywis-pubsub wnm message validate /path/to/message1.json
+pywis-pubsub wnm ets validate /path/to/message1.json
 
 # verify data from a message
-pywis-pubsub wnm message verify /path/to/message1.json
+pywis-pubsub wnm ets verify /path/to/message1.json
 
 # validate WNM against abstract test suite (file on disk)
 pywis-pubsub wnm ets validate /path/to/file.json
@@ -150,6 +152,18 @@ pywis-pubsub wnm publish --topic origin/a/wis2/centre-id/data/core/weather --con
 #### Using the API
 
 Python examples:
+
+Validating a WNM
+```python
+
+from pywis_pubsub.wnm.ets import WNMTestSuite
+
+try:
+    ts = WNMTestSuite(wnm_dict)
+    _ = ts.run_tests(fail_on_schema_validation=True)
+except Exception as err:
+    print(f'Error: {err}')
+```
 
 Subscribing to a WIS2 Global Broker
 ```python
@@ -217,13 +231,36 @@ Running KPIs
 
 ### WIS2 Monitoring Events (WME) workflow
 
-#### Subscribing
 
 #### Validating a message
 
+```bash
+# validate WMEM against abstract test suite (file on disk)
+pywis-pubsub wmem ets validate /path/to/file.json
+
+# validate WMEM against abstract test suite (URL)
+pywis-pubsub wmem ets validate https://example.org/path/to/file.json
+
+# validate WNM against abstract test suite (URL), but turn JSON Schema validation off
+pywis-pubsub wmem ets validate https://example.org/path/to/file.json --no-fail-on-schema-validation
+```
+
 #### Publishing
 
+To be implemented.
+
 #### Using the API
+
+```python
+
+from pywis_pubsub.wmem.ets import WMEMTestSuite
+
+try:
+    ts = WMEMTestSuite(wmem_dict)
+    _ = ts.run_tests(fail_on_schema_validation=True)
+except Exception as err:
+    print(f'Error: {err}')
+```
 
 ## Development
 
