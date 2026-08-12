@@ -52,9 +52,8 @@ jobs:
           ls -lh .github/workflows/test-data/origin/a/wis2/mwi/malawi_wmo_demo/data/core/weather/surface-based-observations/synop/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4
       - name: subscribe, publish WMEM with file-based publication
         run: |
-          pywis-pubsub wmem publish --config .github/workflows/test-data/wmem/pub-config.yml --wmem .github/workflows/test-data/wmem/example.json
-          pywis-pubsub subscribe --config  .github/workflows/test-data/wmem/sub-with-msg-validation.yml &
+          pywis-pubsub subscribe --config  .github/workflows/test-data/wmem/sub-with-msg-validation.yml > /tmp/monitor-subscribe.log &
           sleep 1
           pywis-pubsub wmem publish --config .github/workflows/test-data/wmem/pub-config.yml --wmem .github/workflows/test-data/wmem/example.json
           sleep 1
-          less /tmp/subscribe.log
+          less /tmp/monitor-subscribe.log
