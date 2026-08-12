@@ -21,24 +21,16 @@
 
 import click
 
-from pywis_pubsub.wmem import wmem
-from pywis_pubsub.wnm import wnm
-from pywis_pubsub.bundle import bundle
-from pywis_pubsub.subscribe import subscribe
-from pywis_pubsub.util import get_package_version
-
-__version__ = get_package_version()
+from pywis_pubsub.wmem.ets import ets
+from pywis_pubsub.wmem.publish import publish
 
 
 @click.group()
-@click.version_option(version=__version__)
-def cli():
-    """WIS2 Publish/Subscribe/Download utility"""
+def wmem():
+    """WIS2 Monitoring Event Message utilities"""
 
     pass
 
 
-cli.add_command(wmem)
-cli.add_command(wnm)
-cli.add_command(bundle)
-cli.add_command(subscribe)
+wmem.add_command(ets)
+wmem.add_command(publish)

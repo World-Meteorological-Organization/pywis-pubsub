@@ -1,0 +1,83 @@
+{
+    "id": "6e1c7f9f-dd6c-48d9-bbc4-aef0625f1fb8",
+    "specversion": "1.0",
+    "type": "int.wmo.wis.wme.event.wcmp2.ets",
+    "source": "ca-eccc-msc-global-discovery-catalogue",
+    "subject": "de-dwd",
+    "time": "2024-10-17T05:13:22Z",
+    "datacontenttype": "application/json",
+    "dataschema": "https://schemas.wmo.int/wme/1.0.0/schemas/wis2-event-message-bundled.json",
+    "data": {
+        "conformsTo": [
+            "http://wis.wmo.int/spec/wme/1/conf/monitoring-event-message-core"
+        ],
+        "severity": "INFO",
+        "content": {
+            "id": "f84f34d6-cfb0-4cff-98ec-32f88d0fd7b8",
+            "title": "WCMP2 ETS report",
+            "report_type": "ets",
+            "summary": {
+                "PASSED": 12,
+                "FAILED": 0,
+                "SKIPPED": 0
+            },
+            "generated_by": "pywcmp 0.10.1 (https://github.com/wmo-im/pywcmp)",
+            "tests": [
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/conformance",
+                    "code": "PASSED",
+                    "message": "Passes given schema is compliant/valid"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/contacts",
+                    "code": "PASSED"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/record_created_datetime",
+                    "code": "PASSED"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/data_policy",
+                    "code": "PASSED"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/description",
+                    "code": "PASSED",
+                    "message": "Passes given schema is compliant/valid"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/extent_geospatial",
+                    "code": "PASSED"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/extent_temporal",
+                    "code": "PASSED",
+                    "message": "Passes given schema is compliant/valid"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/identifier",
+                    "code": "PASSED"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/links",
+                    "code": "PASSED"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/themes",
+                    "code": "PASSED"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/title",
+                    "code": "PASSED",
+                    "message": "Passes given schema is compliant/valid"
+                },
+                {
+                    "id": "http://wis.wmo.int/spec/wcmp/2/conf/core/type",
+                    "code": "PASSED"
+                }
+            ],
+            "datetime": "2024-10-02T13:55:00Z",
+            "metadata_id": "urn:wmo:md:de-dwd:icon-eps.ALL"
+        }
+    }
+}

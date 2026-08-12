@@ -28,7 +28,7 @@ import logging
 import click
 
 from pywis_pubsub import cli_options
-from pywis_pubsub.message import get_link, get_data
+from pywis_pubsub.wnm.message import get_link, get_data
 
 LOGGER = logging.getLogger(__name__)
 

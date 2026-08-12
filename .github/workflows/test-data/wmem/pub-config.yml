@@ -1,0 +1,5 @@
+# RFC1738 URL
+broker: mqtt://localhost:1883
+
+# topic to publish on
+publish_topic: monitor/a/wis2/de-dwd

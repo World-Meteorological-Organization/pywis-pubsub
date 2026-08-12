@@ -26,9 +26,10 @@ from unittest.mock import patch
 
 from requests import Session
 from pywis_pubsub.errors import TestSuiteError
-from pywis_pubsub.ets import WNMTestSuite
-from pywis_pubsub.kpi import calculate_grade, WNMKeyPerformanceIndicators
-from pywis_pubsub.verification import verify_data
+from pywis_pubsub.wmem.ets import WMEMTestSuite
+from pywis_pubsub.wnm.ets import WNMTestSuite
+from pywis_pubsub.wnm.kpi import calculate_grade, WNMKeyPerformanceIndicators
+from pywis_pubsub.wnm.verification import verify_data
 
 TESTDATA_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -64,7 +65,7 @@ class PyWISPubSubTest(unittest.TestCase):
             mock_get.return_value.status_code = 200
             mock_get.return_value.content = fh.read()
 
-        with open(get_abspath('test_valid_checksum.json')) as fh:
+        with open(get_abspath('test_wnm_valid_checksum.json')) as fh:
             data = json.load(fh)
             is_valid = verify_data(data, True)
             self.assertTrue(is_valid)
@@ -82,37 +83,37 @@ class WNMETSTest(unittest.TestCase):
         pass
 
     def test_pass(self):
-        """Simple tests for a passing record"""
-        with open(get_abspath('test_valid.json')) as fh:
+        """Simple tests for a passing message"""
+        with open(get_abspath('test_wnm_valid.json')) as fh:
             ts = WNMTestSuite(json.load(fh))
             results = ts.run_tests()
 
             codes = [r['code'] for r in results['ets-report']['tests']]
 
             self.assertEqual(codes.count('FAILED'), 0)
-            self.assertEqual(codes.count('PASSED'), 7)
+            self.assertEqual(codes.count('PASSED'), 8)
             self.assertEqual(codes.count('SKIPPED'), 0)
 
     def test_fail(self):
-        """Simple tests for a failing record"""
-        with open(get_abspath('test_invalid_datetime.json')) as fh:
-            record = json.load(fh)
-            ts = WNMTestSuite(record)
+        """Simple tests for a failing message"""
+        with open(get_abspath('test_wnm_invalid_datetime.json')) as fh:
+            message = json.load(fh)
+            ts = WNMTestSuite(message)
             results = ts.run_tests()
 
             codes = [r['code'] for r in results['ets-report']['tests']]
 
             self.assertEqual(codes.count('FAILED'), 1)
-            self.assertEqual(codes.count('PASSED'), 6)
+            self.assertEqual(codes.count('PASSED'), 7)
             self.assertEqual(codes.count('SKIPPED'), 0)
 
             with self.assertRaises(ValueError):
                 ts.run_tests(fail_on_schema_validation=True)
 
         with self.assertRaises(ValueError):
-            with open(get_abspath('test_invalid.json')) as fh:
-                record = json.load(fh)
-                ts = WNMTestSuite(record)
+            with open(get_abspath('test_wnm_invalid.json')) as fh:
+                message = json.load(fh)
+                ts = WNMTestSuite(message)
                 results = ts.run_tests(fail_on_schema_validation=True)
 
                 codes = [r['code'] for r in results['ets-report']['tests']]
@@ -122,21 +123,21 @@ class WNMETSTest(unittest.TestCase):
                 self.assertEqual(codes.count('SKIPPED'), 0)
 
         with self.assertRaises(json.decoder.JSONDecodeError):
-            with open(get_abspath('test_malformed.json')) as fh:
-                record = json.load(fh)
-                ts = WNMTestSuite(record)
+            with open(get_abspath('test_wnm_malformed.json')) as fh:
+                message = json.load(fh)
+                ts = WNMTestSuite(message)
                 results = ts.run_tests()
 
     def test_raise_for_status(self):
         """Simple test for raise_for_status"""
 
-        with open(get_abspath('test_valid.json')) as fh:
+        with open(get_abspath('test_wnm_valid.json')) as fh:
             ts = WNMTestSuite(json.load(fh))
             _ = ts.run_tests(fail_on_schema_validation=True)
 
-            assert ts.raise_for_status() is None
+            self.assertIsNone(ts.raise_for_status())
 
-        with open(get_abspath('test_invalid_uuid.json')) as fh:
+        with open(get_abspath('test_wnm_invalid_uuid.json')) as fh:
             ts = WNMTestSuite(json.load(fh))
             _ = ts.run_tests(fail_on_schema_validation=True)
 
@@ -156,7 +157,7 @@ class WNMKPITest(unittest.TestCase):
         pass
 
     def test_kpi_evaluate(self):
-        file_ = 'test_valid.json'
+        file_ = 'test_wnm_valid.json'
         with open(get_abspath(file_)) as fh:
             data = json.load(fh)
 
@@ -180,6 +181,71 @@ class WNMKPITest(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             calculate_grade(101)
+
+
+class WMEMETSTest(unittest.TestCase):
+    """WMEM tests of tests"""
+
+    def setUp(self):
+        """setup test fixtures, etc."""
+        pass
+
+    def tearDown(self):
+        """return to pristine state"""
+        pass
+
+    def test_pass(self):
+        """Simple tests for a passing message"""
+        with open(get_abspath('test_wmem_valid_gdc_ets.json')) as fh:
+            ts = WMEMTestSuite(json.load(fh))
+            results = ts.run_tests()
+
+            codes = [r['code'] for r in results['ets-report']['tests']]
+
+            self.assertEqual(codes.count('FAILED'), 0)
+            self.assertEqual(codes.count('PASSED'), 15)
+            self.assertEqual(codes.count('SKIPPED'), 0)
+
+    def test_fail(self):
+        """Simple tests for a failing message"""
+
+        with open(get_abspath('test_wmem_valid_scgc_logs.json')) as fh:
+            ts = WMEMTestSuite(json.load(fh))
+            results = ts.run_tests()
+
+            codes = [r['code'] for r in results['ets-report']['tests']]
+
+            self.assertEqual(codes.count('FAILED'), 2)
+            self.assertEqual(codes.count('PASSED'), 13)
+            self.assertEqual(codes.count('SKIPPED'), 0)
+
+        with self.assertRaises(ValueError):
+            with open(get_abspath('test_wnm_invalid.json')) as fh:
+                message = json.load(fh)
+                ts = WNMTestSuite(message)
+                results = ts.run_tests(fail_on_schema_validation=True)
+
+                codes = [r['code'] for r in results['ets-report']['tests']]
+
+                self.assertEqual(codes.count('FAILED'), 1)
+                self.assertEqual(codes.count('PASSED'), 6)
+                self.assertEqual(codes.count('SKIPPED'), 0)
+
+    def test_raise_for_status(self):
+        """Simple test for raise_for_status"""
+
+        with open(get_abspath('test_wmem_valid_gdc_ets.json')) as fh:
+            ts = WMEMTestSuite(json.load(fh))
+            _ = ts.run_tests(fail_on_schema_validation=True)
+
+            self.assertIsNone(ts.raise_for_status())
+
+        with open(get_abspath('test_wmem_invalid_type.json')) as fh:
+            ts = WMEMTestSuite(json.load(fh))
+            _ = ts.run_tests(fail_on_schema_validation=True)
+
+            with self.assertRaises(TestSuiteError):
+                ts.raise_for_status()
 
 
 if __name__ == '__main__':

@@ -34,9 +34,9 @@ import requests
 
 from pywis_pubsub import cli_options
 from pywis_pubsub import util
-from pywis_pubsub.message import LINK_TYPES
+from pywis_pubsub.wnm.message import LINK_TYPES
 from pywis_pubsub.mqtt import MQTTPubSubClient
-from pywis_pubsub.ets import validate
+from pywis_pubsub.wnm.ets import validate
 
 
 LOGGER = logging.getLogger(__name__)
@@ -198,7 +198,7 @@ def create_message(topic: str, content_type: str,
 @click.pass_context
 @cli_options.OPTION_CONFIG
 @cli_options.OPTION_VERBOSITY
-@click.option('--wnm', '-wnm', type=click.File(), help='url of data')
+@click.option('--wnm', '-wnm', type=click.File(), help='path to WNM file')
 @click.option('--url', '-u', help='url of data')
 @click.option('--inline', '-in', default=False,
               help='whether to publish the data inline as base64 (default=False)')  # noqa

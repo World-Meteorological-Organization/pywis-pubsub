@@ -5,12 +5,11 @@
 
 ## Overview
 
-pywis-pubsub provides subscription and download capability of data from WIS2.
+pywis-pubsub provides Publish-Subscribe capabilities in support of WIS2 message notification, processing and data download.
 
 ## Installation
 
-The easiest way to install pywis-pubsub is via the Python [pip](https://pip.pypa.io)
-utility:
+The easiest way to install pywis-pubsub is via the Python [pip](https://pip.pypa.io) utility:
 
 ```bash
 # default install
@@ -60,11 +59,13 @@ cp pywis-pubsub-config.yml local.yml
 vim local.yml # update accordingly to configure subscribe options
 ```
 
+
 ### Subscribing
 
+
 ```bash
-# sync WIS2 notification schema
-pywis-pubsub schema sync
+# sync WIS2 notification and monitoring event schemas
+pywis-pubsub bundle sync
 
 # connect, and simply echo messages
 pywis-pubsub subscribe --config local.yml
@@ -79,43 +80,45 @@ pywis-pubsub subscribe --config local.yml --bbox=-142,42,-52,84
 pywis-pubsub subscribe --config local.yml --bbox=-142,42,-52,84 --verbosity=DEBUG
 ```
 
-### Validating a message and verifying data
+### WIS2 Notification Message (WNM) workflow
+
+#### Validating a message and verifying data
 
 ```bash
 # validate a message
-pywis-pubsub message validate /path/to/message1.json
+pywis-pubsub wnm ets validate /path/to/message1.json
 
 # verify data from a message
-pywis-pubsub message verify /path/to/message1.json
+pywis-pubsub wnm ets verify /path/to/message1.json
 
 # validate WNM against abstract test suite (file on disk)
-pywis-pubsub ets validate /path/to/file.json
+pywis-pubsub wnm ets validate /path/to/file.json
 
 # validate WNM against abstract test suite (URL)
-pywis-pubsub ets validate https://example.org/path/to/file.json
+pywis-pubsub wnm ets validate https://example.org/path/to/file.json
 
 # validate WNM against abstract test suite (URL), but turn JSON Schema validation off
-pywis-pubsub ets validate https://example.org/path/to/file.json --no-fail-on-schema-validation
+pywis-pubsub wnm ets validate https://example.org/path/to/file.json --no-fail-on-schema-validation
 
 # key performance indicators
 
 # set environment variable for GDC URL
 export PYWIS_PUBSUB_GDC_URL=https://api.weather.gc.ca/collections/wis2-discovery-metadata
 
-# all key performance indicators at once
-pywis-pubsub kpi validate https://example.org/path/to/file.json --verbosity DEBUG
+# all WNM key performance indicators at once
+pywis-pubsub wnm kpi validate https://example.org/path/to/file.json --verbosity DEBUG
 
-# all key performance indicators at once, but turn ETS validation off
-pywis-pubsub kpi validate https://example.org/path/to/file.json --no-fail-on-ets --verbosity DEBUG
+# all WNM key performance indicators at once, but turn ETS validation off
+pywis-pubsub wnm kpi validate https://example.org/path/to/file.json --no-fail-on-ets --verbosity DEBUG
 
-# all key performance indicators at once, in summary
-pywis-pubsub kpi validate https://example.org/path/to/file.json --verbosity DEBUG --summary
+# all WNM key performance indicators at once, in summary
+pywis-pubsub wnm kpi validate https://example.org/path/to/file.json --verbosity DEBUG --summary
 
-# selected key performance indicator
-pywis-pubsub kpi validate --kpi metadata_id /path/to/file.json -v INFO
+# selected WNM key performance indicator
+pywis-pubsub wnm kpi validate --kpi metadata_id /path/to/file.json -v INFO
 ```
 
-### Publishing
+#### Publishing
 
 ```bash
 cp pub-config-example.yml pub-local.yml
@@ -125,30 +128,42 @@ vim pub-local.yml # update accordingly to configure publishing options
 # data-url=http://www.meteo.xx/stationXYZ-20221111085500.bufr4 
 # lon,lat,elevation=33.8,11.8,112
 # wigos_station_identifier=0-20000-12345
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345
+pywis-pubsub wnm publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345
 
 # publish a message with a WCMP2 metadata id
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001"
+pywis-pubsub wnm publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001"
 
 # publish a message with a datetime (instant)
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --datetime 2024-01-08T22:56:23Z
+pywis-pubsub wnm publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --datetime 2024-01-08T22:56:23Z
 
 # publish a message with a start and end datetime (extent)
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --datetime 2024-01-08T20:56:23Z/2024-01-08T22:56:43Z
+pywis-pubsub wnm publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --datetime 2024-01-08T20:56:23Z/2024-01-08T22:56:43Z
 
 # publish a message as a data update
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --operation update
+pywis-pubsub wnm publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --operation update
 
 # publish a message as a data deletion
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --operation delete
+pywis-pubsub wnm publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml -u https://example.org/stationXYZ-20221111085500.bufr4 -g 33.8,-11.8,8.112 -w 0-20000-12345 --metadata-id "x-urn:wmo:md:test-foo:htebmal2001" --operation delete
 
 # publish a message from file on disk
-pywis-pubsub publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml --wnm my_message.json
+pywis-pubsub wnm publish --topic origin/a/wis2/centre-id/data/core/weather --config pub-local.yml --wnm my_message.json
 ```
 
-### Using the API
+#### Using the API
 
 Python examples:
+
+Validating a WNM
+```python
+
+from pywis_pubsub.wnm.ets import WNMTestSuite
+
+try:
+    ts = WNMTestSuite(wnm_dict)
+    _ = ts.run_tests(fail_on_schema_validation=True)
+except Exception as err:
+    print(f'Error: {err}')
+```
 
 Subscribing to a WIS2 Global Broker
 ```python
@@ -178,8 +193,8 @@ Publishing a WIS2 Notification Message
 from datetime import datetime, timezone
 
 from pywis_pubsub.mqtt import MQTTPubSubClient
-from pywis_pubsub.publish import create_message
-from pywis_pubsub.ets import WNMTestSuite, WNMKeyPerformanceIndicators
+from pywis_pubsub.wnm.publish import create_message
+from pywis_pubsub.wnm.ets import WNMTestSuite, WNMKeyPerformanceIndicators
 
 url_info = get_url_info('http://www.meteo.xx/stationXYZ-20221111085500.bufr4')
 
@@ -208,10 +223,45 @@ Running KPIs
 >>> import json
 >>> from pywis_pubsub.kpi import WNMKeyPerformanceIndicators
 >>> with open('/path/to/file.json') as fh:
-...     data = json.load(fh)
->>> kpis = WNMKeyPerformanceIndicators(data)
+...     data = json.load(fh) >>> kpis = WNMKeyPerformanceIndicators(data)
 >>> results = kpis.evaluate()
 >>> results['summary']
+```
+
+### WIS2 Monitoring Events (WME) workflow
+
+
+#### Validating a message
+
+```bash
+# validate WMEM against abstract test suite (file on disk)
+pywis-pubsub wmem ets validate /path/to/file.json
+
+# validate WMEM against abstract test suite (URL)
+pywis-pubsub wmem ets validate https://example.org/path/to/file.json
+
+# validate WNM against abstract test suite (URL), but turn JSON Schema validation off
+pywis-pubsub wmem ets validate https://example.org/path/to/file.json --no-fail-on-schema-validation
+```
+
+#### Publishing
+
+```bash
+# publish a message from file on disk
+pywis-pubsub wmem publish --topic monitor/a/wis2/centre-id --config pub-local.yml --wmem my_message.json
+```
+
+#### Using the API
+
+```python
+
+from pywis_pubsub.wmem.ets import WMEMTestSuite
+
+try:
+    ts = WMEMTestSuite(wmem_dict)
+    _ = ts.run_tests(fail_on_schema_validation=True)
+except Exception as err:
+    print(f'Error: {err}')
 ```
 
 ## Development
