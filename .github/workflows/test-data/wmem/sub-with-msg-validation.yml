@@ -1,0 +1,9 @@
+# RFC1738 URL
+broker: mqtt://localhost:1883
+
+# list of topics to subscribe to
+subscribe_topics:
+    - monitor/a/wis2/de-dwd
+
+# whether to validate message against schema
+validate_message: true

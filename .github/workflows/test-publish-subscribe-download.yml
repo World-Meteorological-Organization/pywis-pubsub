@@ -53,3 +53,8 @@ jobs:
       - name: subscribe, publish WMEM with file-based publication
         run: |
           pywis-pubsub wmem publish --config .github/workflows/test-data/wmem/pub-config.yml --wmem .github/workflows/test-data/wmem/example.json
+          pywis-pubsub subscribe --config  .github/workflows/test-data/wmem/sub-with-msg-validation.yml &
+          sleep 1
+          pywis-pubsub wmem publish --config .github/workflows/test-data/wmem/pub-config.yml --wmem .github/workflows/test-data/wmem/example.json
+          sleep 1
+          less /tmp/subscribe.log
