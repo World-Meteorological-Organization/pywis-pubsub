@@ -223,8 +223,7 @@ Running KPIs
 >>> import json
 >>> from pywis_pubsub.kpi import WNMKeyPerformanceIndicators
 >>> with open('/path/to/file.json') as fh:
-...     data = json.load(fh)
->>> kpis = WNMKeyPerformanceIndicators(data)
+...     data = json.load(fh) >>> kpis = WNMKeyPerformanceIndicators(data)
 >>> results = kpis.evaluate()
 >>> results['summary']
 ```
@@ -247,7 +246,10 @@ pywis-pubsub wmem ets validate https://example.org/path/to/file.json --no-fail-o
 
 #### Publishing
 
-To be implemented.
+```bash
+# publish a message from file on disk
+pywis-pubsub wmem publish --topic monitor/a/wis2/centre-id --config pub-local.yml --wmem my_message.json
+```
 
 #### Using the API
 

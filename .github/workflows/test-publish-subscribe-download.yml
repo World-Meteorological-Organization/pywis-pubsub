@@ -24,29 +24,32 @@ jobs:
       - name: run tests
         run: |
           python3 tests/run_tests.py
-      - name: subscribe, publish and download without message validation
+      - name: subscribe, publish WNM and download associated data without WNM message validation
         run: |
           rm -rf .github/workflows/test-data/*.bufr4
-          pywis-pubsub subscribe --config .github/workflows/test-data/sub-no-msg-validation.yml --download > /tmp/subscribe.log &
+          pywis-pubsub subscribe --config .github/workflows/test-data/wnm/sub-no-msg-validation.yml --download > /tmp/subscribe.log &
           sleep 1
-          pywis-pubsub wnm publish --config .github/workflows/test-data/pub-config.yml -u https://wmostorage.blob.core.windows.net/wmo-public/wmo-information-system/pywis-pubsub-test/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4 -g 33.8025,-11.8415 -w 0-454-2-AWSCHIKANGAWA
+          pywis-pubsub wnm publish --config .github/workflows/test-data/wnm/pub-config.yml -u https://wmostorage.blob.core.windows.net/wmo-public/wmo-information-system/pywis-pubsub-test/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4 -g 33.8025,-11.8415 -w 0-454-2-AWSCHIKANGAWA
           sleep 1
           less /tmp/subscribe.log
           ls -lh .github/workflows/test-data/origin/a/wis2/mwi/malawi_wmo_demo/data/core/weather/surface-based-observations/synop/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4
-      - name: subscribe, publish and download with message validation
+      - name: subscribe, publish WNM and download associated data with WNM message validation
         run: |
           rm -rf .github/workflows/test-data/*.bufr4
-          pywis-pubsub subscribe --config .github/workflows/test-data/sub-with-msg-validation.yml --download > /tmp/subscribe.log &
+          pywis-pubsub subscribe --config .github/workflows/test-data/wnm/sub-with-msg-validation.yml --download > /tmp/subscribe.log &
           sleep 1
-          pywis-pubsub wnm publish --config .github/workflows/test-data/pub-config.yml -u https://wmostorage.blob.core.windows.net/wmo-public/wmo-information-system/pywis-pubsub-test/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4 -g 33.8025,-11.8415 -w 0-454-2-AWSCHIKANGAWA
+          pywis-pubsub wnm publish --config .github/workflows/test-data/wnm/pub-config.yml -u https://wmostorage.blob.core.windows.net/wmo-public/wmo-information-system/pywis-pubsub-test/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4 -g 33.8025,-11.8415 -w 0-454-2-AWSCHIKANGAWA
           sleep 1
           less /tmp/subscribe.log
           ls -lh .github/workflows/test-data/origin/a/wis2/mwi/malawi_wmo_demo/data/core/weather/surface-based-observations/synop/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4
-      - name: subscribe, publish and download with file-based publication
+      - name: subscribe, publish WNM and download associated data with file-based publication
         run: |
           rm -rf .github/workflows/test-data/*.bufr4
-          pywis-pubsub subscribe --config .github/workflows/test-data/sub-with-msg-validation.yml --download &
+          pywis-pubsub subscribe --config .github/workflows/test-data/wnm/sub-with-msg-validation.yml --download &
           sleep 1
-          pywis-pubsub wnm publish --config .github/workflows/test-data/pub-config.yml --wnm .github/workflows/test-data/example-message.json
+          pywis-pubsub wnm publish --config .github/workflows/test-data/wnm/pub-config.yml --wnm .github/workflows/test-data/wnm/example.json
           sleep 1
           ls -lh .github/workflows/test-data/origin/a/wis2/mwi/malawi_wmo_demo/data/core/weather/surface-based-observations/synop/WIGOS_0-454-2-AWSCHIKANGAWA_20221109T135500.bufr4
+      - name: subscribe, publish WMEM with file-based publication
+        run: |
+          pywis-pubsub wmem publish --config .github/workflows/test-data/wmem/pub-config.yml --wmem .github/workflows/test-data/wmem/example.json
