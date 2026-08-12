@@ -62,6 +62,9 @@ def on_message_handler(client, userdata, msg):
                 ts = WNMTestSuite(msg_dict)
             elif mtype == 'wmem':
                 ts = WMEMTestSuite(msg_dict)
+            else:
+                LOGGER.error('Unsupported message type')
+                return
 
             _ = ts.run_tests(fail_on_schema_validation=True)
 

@@ -22,6 +22,7 @@
 import click
 
 from pywis_pubsub.wmem.ets import ets
+from pywis_pubsub.wmem.publish import publish
 
 
 @click.group()
@@ -32,3 +33,4 @@ def wmem():
 
 
 wmem.add_command(ets)
+wmem.add_command(publish)
