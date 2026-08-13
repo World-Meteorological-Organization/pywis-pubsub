@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pywis-pubsub"
-version = "0.13.dev1"
+version = "0.13.0"
 description = "pywis-pubsub provides Publish-Subscribe capabilities in support of WIS2 message notification, processing and data download"
 readme = "README.md"
 requires-python = ">=3.12"
