@@ -47,6 +47,7 @@ def on_message_handler(client, userdata, msg):
     LOGGER.info(f'Topic: {msg.topic}')
     LOGGER.info(f'Message:\n{msg.payload}')
 
+    mtype = None
     msg_dict = json.loads(msg.payload)
 
     if 'http://wis.wmo.int/spec/wnm/1/conf/core' in msg_dict.get('conformsTo', []):  # noqa
@@ -58,13 +59,14 @@ def on_message_handler(client, userdata, msg):
         if userdata.get('validate_message', False):
             LOGGER.debug('Validating message')
 
+            if mtype is None:
+                LOGGER.error('Unsupported message type')
+                return
+
             if mtype == 'wnm':
                 ts = WNMTestSuite(msg_dict)
             elif mtype == 'wmem':
                 ts = WMEMTestSuite(msg_dict)
-            else:
-                LOGGER.error('Unsupported message type')
-                return
 
             _ = ts.run_tests(fail_on_schema_validation=True)
 
